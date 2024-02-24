@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+skinparam packageStyle rect
+actor "Пользователь" as User
+
+rectangle "Информационная система склада" {
+  usecase "Учет поступления товаров" as UseCase1
+  usecase "Учет ухода товаров" as UseCase2
+  usecase "Учет списания товаров" as UseCase3
+  usecase "Определение места хранения" as UseCase4
+  
+  User --> UseCase1 : Использует
+  User --> UseCase2 : Использует
+  User --> UseCase3 : Использует
+  User --> UseCase4 : Использует
+   
+  (UseCase1) .> (UseCase4) : включает
+  }
+@enduml
