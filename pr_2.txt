@@ -1,0 +1,124 @@
+UML - диаграмма вариантов использования
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor Пользователь as User
+rectangle "Информационная система склада" {
+  usecase "Учет поступления товаров" as U1
+  usecase "Учет ухода товаров" as U2
+  usecase "Учет списания товаров" as U3
+  usecase "Определение места хранения товаров" as U4
+
+  User --> U1: Ввод информации
+  User --> U2: Ввод информации
+  User --> U3: Ввод информации
+  User --> U4: Запрос информации
+
+  U1 --> U2: Взаимодействие
+  U1 --> U3: Взаимодействие
+  U1 --> U4: Взаимодействие
+
+  U2 --> U1: Взаимодействие
+  U2 --> U3: Взаимодействие
+  U2 --> U4: Взаимодействие
+
+  U3 --> U1: Взаимодействие
+  U3 --> U2: Взаимодействие
+  U3 --> U4: Взаимодействие
+
+  U4 --> U1: Взаимодействие
+  U4 --> U2: Взаимодействие
+  U4 --> U3: Взаимодействие
+}
+@enduml
+
+UML - диаграмма классов
+
+@startuml
+package "Информационная система склада" {
+  class Склад {
+    - название: строка
+    - адрес: строка
+    - площадь: число
+    + добавитьТовар()
+    + удалитьТовар()
+  }
+
+  class Товар {
+    - название: строка
+    - количество: число
+    + изменитьКоличество()
+  }
+
+  class Поставщик {
+    - название: строка
+    - контакт: строка
+  }
+
+  class Заказ {
+    - номер: число
+    - дата: дата
+    + создатьЗаказ()
+    + отменитьЗаказ()
+  }
+
+  class МестоХранения {
+    - номер: число
+    - тип: строка
+  }
+
+  Склад "1" *-- "1..*" Товар : содержит
+  Склад "1" o-- "1..*" МестоХранения : имеет
+  Поставщик "1" *-- "0..*" Заказ : поставляет
+
+}
+@enduml
+
+UML - диаграмма последовательности для наиболее часто используемых прецедентов
+
+@startuml
+title Диаграмма последовательности для информационной системы склада
+
+actor Пользователь as User
+participant "Информационная система склада" as WarehouseSystem
+participant "Склад" as Warehouse
+participant "Товар" as Product
+participant "Место хранения" as StorageLocation
+
+User -> WarehouseSystem: Вход в систему
+activate WarehouseSystem
+
+User -> WarehouseSystem: Просмотреть список товаров
+WarehouseSystem -> Warehouse: Запросить список товаров
+activate Warehouse
+Warehouse --> WarehouseSystem: Отправить список товаров
+
+User -> WarehouseSystem: Добавить товар на склад
+WarehouseSystem -> Warehouse: Добавить товар
+activate Product
+Warehouse -> Product: Создать новый товар
+Product --> Warehouse: Товар добавлен
+deactivate Product
+
+User -> WarehouseSystem: Списать товар со склада
+WarehouseSystem -> Warehouse: Списать товар
+Warehouse -> Product: Уменьшить количество товара
+Product --> Warehouse: Товар списан
+
+User -> WarehouseSystem: Найти место для товара
+WarehouseSystem -> Warehouse: Найти место хранения
+Warehouse --> StorageLocation: Найти свободное место
+StorageLocation --> Warehouse: Место найдено
+
+User -> WarehouseSystem: Поставить товар на место хранения
+WarehouseSystem -> Warehouse: Поставить товар на место
+Warehouse -> StorageLocation: Разместить товар
+StorageLocation --> Warehouse: Товар размещен
+
+User -> WarehouseSystem: Выход из системы
+deactivate WarehouseSystem
+
+@enduml
+
