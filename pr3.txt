@@ -1,0 +1,68 @@
+Диаграмма развертывания:
+
+@startuml
+node "Информационная система склада" {
+    node "База данных" as DB
+    node "Сервер приложений" as AppServer
+    node "Клиентское приложение" as ClientApp
+
+    DB <-> AppServer: Взаимодействие с базой данных
+    AppServer --> ClientApp: Передача данных клиенту
+}
+
+node "Склад" {
+    node "Поступление товаров" as GoodsIn
+    node "Уход товаров" as GoodsOut
+    node "Списание товаров" as WriteOff
+    node "Место хранения товаров" as StorageLocation
+
+    GoodsIn --> StorageLocation: Распределение товаров по местам хранения
+    GoodsOut --> StorageLocation: Выбор товаров для ухода со склада
+    WriteOff --> StorageLocation: Определение места списания товаров
+}
+@enduml
+
+Диаграмма последовательности:
+
+@startuml
+title Диаграмма последовательности для информационной системы склада
+
+actor Пользователь as User
+participant "Информационная система склада" as WarehouseSystem
+participant "Склад" as Warehouse
+participant "Товар" as Product
+participant "Место хранения" as StorageLocation
+
+User -> WarehouseSystem: Вход в систему
+activate WarehouseSystem
+
+User -> WarehouseSystem: Просмотреть список товаров
+WarehouseSystem -> Warehouse: Запросить список товаров
+activate Warehouse
+Warehouse --> WarehouseSystem: Отправить список товаров
+
+User -> WarehouseSystem: Добавить товар на склад
+WarehouseSystem -> Warehouse: Добавить товар
+activate Product
+Warehouse -> Product: Создать новый товар
+Product --> Warehouse: Товар добавлен
+deactivate Product
+
+User -> WarehouseSystem: Списать товар со склада
+WarehouseSystem -> Warehouse: Списать товар
+Warehouse -> Product: Уменьшить количество товара
+Product --> Warehouse: Товар списан
+
+User -> WarehouseSystem: Найти место для товара
+WarehouseSystem -> Warehouse: Найти место хранения
+Warehouse --> StorageLocation: Найти свободное место
+StorageLocation --> Warehouse: Место найдено
+
+User -> WarehouseSystem: Поставить товар на место хранения
+WarehouseSystem -> Warehouse: Поставить товар на место
+Warehouse -> StorageLocation: Разместить товар
+StorageLocation --> Warehouse: Товар размещен
+
+User -> WarehouseSystem: Выход из системы
+deactivate WarehouseSystem
+@enduml
